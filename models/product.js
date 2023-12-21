@@ -19,11 +19,12 @@ module.exports = {
     var skip = (page - 1) * limit;
     return (
       productSchema
-        .find(Search)
+        // .find(Search)
         // .select("*")
-        .sort(sort)
-        .limit(limit)
-        .skip(skip)
+        // .sort(sort)
+        // .limit(limit)
+        // .skip(skip)
+        .find({})
         .exec()
     );
   },
@@ -35,5 +36,8 @@ module.exports = {
   },
   createProduct: function (product) {
     return new productSchema(product).save();
+  },
+  getById: function (id) {
+    return productSchema.findById(id);
   },
 };
