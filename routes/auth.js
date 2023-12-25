@@ -42,7 +42,7 @@ router.get(
   "/me",
   async function (req, res, next) {
     var result = await checkLogin(req);
-    if (result.err === true) {
+    if (result.message) {
       responseData.responseReturn(res, 400, false, result.message);
       return;
     }
