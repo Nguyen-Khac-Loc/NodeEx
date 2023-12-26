@@ -46,16 +46,14 @@ router.get(
       responseData.responseReturn(res, 400, false, result.message);
       return;
     }
-    console.log(result);
     req.userID = result.id;
     req.role = result.role;
     next();
   },
   async function (req, res, next) {
-    const DSRole = ["admin", "publisher"];
-    var result = await checkRole(req.role, DSRole);
-    if (!result) {
-      responseData.responseReturn(res, 400, false, "Ban khong du quyen");
+    var result = await checkRole(req.role);
+    if (result.message) {
+      responseData.responseReturn(res, 400, false, result.message);
       return;
     }
     next();
