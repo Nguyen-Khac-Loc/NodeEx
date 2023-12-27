@@ -7,7 +7,11 @@ const UserSchema = new mongoose.Schema({
   email: String,
   userName: String,
   password: String,
-  role: String,
+  role: {
+    type: String,
+    enum: ["admin", "user", "publisher"],
+    default: "user",
+  },
 });
 
 UserSchema.pre("save", function () {
