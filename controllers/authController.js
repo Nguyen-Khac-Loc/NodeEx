@@ -49,11 +49,12 @@ const protect = async function (req, res, next) {
 };
 const restrictTo = (...roles) =>
   async function (req, res, next) {
-    checkLogin;
+    console.log(req.role);
+    // checkLogin;
     var result = await checkRole(req.role, roles);
-    if (!result) {
-      responseData.responseReturn(res, 400, false, "Ban khong du quyen");
-      return;
+    console.log(result);
+    if (result.message) {
+      return responseData.responseReturn(res, 400, false, result.message);
     }
     next();
   };

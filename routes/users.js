@@ -14,7 +14,11 @@ router.get("/me", authController.protect, userController.getCurrentUser);
 
 router
   .route("/")
-  .get(userController.getAllUser)
+  .get(
+    authController.protect,
+    authController.restrictTo("admin", "publisher"),
+    userController.getAllUser
+  )
   .post(validate.validator(), userController.createUser);
 router
   .route("/:id")
