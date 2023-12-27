@@ -38,9 +38,8 @@ const login = async (req, res, next) => {
 };
 const protect = async function (req, res, next) {
   var result = await checkLogin(req);
-  if (result.err === true) {
-    responseData.responseReturn(res, 400, false, result.message);
-    return;
+  if (result.message) {
+    return responseData.responseReturn(res, 400, false, result.message);
   }
   console.log(result);
   req.userID = result.id;
