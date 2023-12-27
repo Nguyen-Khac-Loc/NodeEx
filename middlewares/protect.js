@@ -6,7 +6,7 @@ module.exports = {
     var result = {};
     var token = req.headers.authorization;
     if (!token) {
-      return (result = { err: true, message: "Vui long dang nhap" });
+      return (result = { message: "Vui long dang nhap" });
     }
     if (token.startsWith("Bearer")) {
       token = token.split(" ")[1];
@@ -17,17 +17,19 @@ module.exports = {
           role: userDecrypt.role,
         });
       } catch (error) {
-        return (result = { err: true, message: "Vui long dang nhap" });
+        return (result = { message: "Vui long dang nhap" });
       }
     } else {
-      return (result = { err: true, message: "Vui long dang nhap" });
+      return (result = { message: "Vui long dang nhap" });
     }
   },
-  checkRole: async function (role, roles) {
-    if (roles.includes(role)) {
-      return true;
+  checkRole: async function (role) {
+    const DSRole = ["admin", "publisher"];
+    var result = {};
+    if (DSRole.includes(role)) {
+      return (result = true);
     } else {
-      return false;
+      return (result = { message: "ban khong du quyen truy cap" });
     }
   },
 };
