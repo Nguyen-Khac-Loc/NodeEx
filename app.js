@@ -5,11 +5,9 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var mongoose = require("mongoose");
 
-var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 var itemsRouter = require("./routes/items");
 var productsRouter = require("./routes/products");
-var authRouter = require("./routes/auth");
 
 var app = express();
 
@@ -23,11 +21,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/items", itemsRouter);
 app.use("/products", productsRouter);
-app.use("/auth", authRouter);
 
 mongoose.connect("mongodb://127.0.0.1:27017/BT_Dec18");
 mongoose.connection.once("open", function () {
