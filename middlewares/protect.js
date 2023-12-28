@@ -23,13 +23,4 @@ module.exports = {
       return (result = { message: "Vui long dang nhap" });
     }
   },
-  checkRole: async function (role) {
-    const DSRole = ["admin", "publisher"];
-    var result = {};
-    if (DSRole.includes(role)) {
-      return (result = true);
-    } else {
-      return (result = { message: "ban khong du quyen truy cap" });
-    }
-  },
 };

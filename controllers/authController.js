@@ -23,7 +23,7 @@ const signup = async function (req, res, next) {
       username: req.body.password,
       email: req.body.email,
     });
-    responseData.responseReturn(res, 200, true, newUser);
+    responseData.responseReturn(res, 201, true, newUser);
   }
 };
 const login = async (req, res, next) => {
@@ -39,7 +39,7 @@ const login = async (req, res, next) => {
 const protect = async function (req, res, next) {
   var result = await checkLogin(req);
   if (result.message) {
-    return responseData.responseReturn(res, 400, false, result.message);
+    return responseData.responseReturn(res, 401, false, result.message);
   }
   console.log(result);
   req.userID = result.id;
@@ -49,11 +49,14 @@ const protect = async function (req, res, next) {
 const restrictTo = (...roles) =>
   async function (req, res, next) {
     console.log(req.role);
-    // checkLogin;
-    var result = await checkRole(req.role, roles);
-    console.log(result);
-    if (result.message) {
-      return responseData.responseReturn(res, 400, false, result.message);
+
+    if (!roles.includes(req.role)) {
+      return responseData.responseReturn(
+        res,
+        401,
+        false,
+        "Ban khong du quyen truy cap"
+      );
     }
     next();
   };
