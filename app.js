@@ -8,6 +8,7 @@ var mongoose = require("mongoose");
 var usersRouter = require("./routes/users");
 var itemsRouter = require("./routes/items");
 var productsRouter = require("./routes/products");
+var departmentsRouter = require("./routes/departments");
 
 var app = express();
 
@@ -24,6 +25,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/users", usersRouter);
 app.use("/items", itemsRouter);
 app.use("/products", productsRouter);
+app.use("/departments", departmentsRouter);
 
 mongoose.connect("mongodb://127.0.0.1:27017/BT_Dec18");
 mongoose.connection.once("open", function () {

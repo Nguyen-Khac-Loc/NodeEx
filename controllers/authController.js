@@ -1,5 +1,6 @@
 const { validationResult } = require("express-validator");
-const { checkLogin, checkRole } = require("../middlewares/protect");
+const { checkLogin } = require("../middlewares/protect");
+const sendmail = require("../helper/sendmail");
 var modelUser = require("../models/user");
 var responseData = require("../helper/responseData");
 
@@ -26,31 +27,35 @@ const signup = async function (req, res, next) {
     responseData.responseReturn(res, 201, true, newUser);
   }
 };
+
 const login = async (req, res, next) => {
   var result = await modelUser.login(req.body.userName, req.body.password);
   if (result.err) {
-    responseData.responseReturn(res, 400, true, result.err);
-    return;
+    return responseData.responseReturn(res, 400, true, result.err);
   }
   var token = result.getJWT();
-  res.cookie("tokenJWT", token);
+
+  const cookieOpts = {
+    expires: new Date(Date.now() + 2 * 24 * 3600 * 1000),
+    httpOnly: true,
+  };
+  res.cookie("jwt", token, cookieOpts);
   responseData.responseReturn(res, 200, true, token);
 };
+
 const protect = async function (req, res, next) {
   var result = await checkLogin(req);
   if (result.message) {
     return responseData.responseReturn(res, 401, false, result.message);
   }
-  console.log(result);
-  req.userID = result.id;
-  req.role = result.role;
+  req.userId = result;
   next();
 };
 const restrictTo = (...roles) =>
   async function (req, res, next) {
-    console.log(req.role);
+    const user = await modelUser.getOne(req.userId).select("role");
 
-    if (!roles.includes(req.role)) {
+    if (!roles.includes(user.role)) {
       return responseData.responseReturn(
         res,
         401,
@@ -60,6 +65,7 @@ const restrictTo = (...roles) =>
     }
     next();
   };
+
 module.exports = {
   login,
   signup,

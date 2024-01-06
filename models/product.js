@@ -1,4 +1,4 @@
-var productSchema = require("../schema/product");
+const productSchema = require("../schema/product");
 
 module.exports = {
   getall: function (query) {
@@ -19,11 +19,11 @@ module.exports = {
     var skip = (page - 1) * limit;
     return (
       productSchema
-        // .find(Search)
-        // .select("*")
-        // .sort(sort)
-        // .limit(limit)
-        // .skip(skip)
+        .find(Search)
+        .select("*")
+        .sort(sort)
+        .limit(limit)
+        .skip(skip)
         .find({})
         .exec()
     );

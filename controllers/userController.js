@@ -1,5 +1,6 @@
 var responseData = require("../helper/responseData");
 var modelUser = require("../models/user");
+const sendmail = require("../helper/sendmail");
 
 const getCurrentUser = async function (req, res, next) {
   //get all
@@ -13,7 +14,6 @@ const getCurrentUser = async function (req, res, next) {
 
 const { validationResult } = require("express-validator");
 const getAllUser = async function (req, res, next) {
-  console.log(req.query);
   var usersAll = await modelUser.getall(req.query);
   responseData.responseReturn(res, 200, true, usersAll);
 };
@@ -46,6 +46,7 @@ const createUser = async function (req, res, next) {
       userName: req.body.userName,
       email: req.body.email,
       password: req.body.password,
+      department_k: req.body.department_k,
     });
     responseData.responseReturn(res, 200, true, newUser);
   }
@@ -70,6 +71,52 @@ const deleteUser = function (req, res, next) {
   }
 };
 
+const logout = async function (req, res, next) {
+  res.cookie("jwt", "none", {
+    expires: new Date(Date.now() + 1000),
+    httpOnly: true,
+  });
+  responseData.responseReturn(res, 200, true, "logout thanh cong");
+};
+
+const forgotPassword = async function (req, res, next) {
+  var email = req.body.email;
+  var user = await modelUser.getByEmail(email);
+  if (!user) {
+    return responseData.responseReturn(res, 404, false, "Email khong ton tai");
+  }
+  user.addTokenForgotPassword();
+  await user.save();
+  try {
+    await sendmail.send(user.email, user.tokenForgot);
+    return responseData.responseReturn(res, 200, true, "gui mail thanh cong");
+  } catch (error) {
+    user.tokenForgot = undefined;
+    user.tokenForgotExp = undefined;
+    return responseData.responseReturn(
+      res,
+      400,
+      true,
+      "gui mail loi vui long thu lai" + error
+    );
+  }
+};
+
+const resetPassword = async function (req, res, next) {
+  var token = req.params.token;
+  var password = req.body.password;
+  var user = await modelUser.getByTokenForgot(token);
+  if (!user) {
+    return responseData.responseReturn(res, 404, false, "user khong ton tai");
+  }
+  user.password = password;
+  user.tokenForgot = undefined;
+  user.tokenForgotExp = undefined;
+  await user.save();
+
+  return responseData.responseReturn(res, 200, true, "mat khau da duoc doi");
+};
+
 module.exports = {
   getAllUser,
   getUser,
@@ -77,4 +124,7 @@ module.exports = {
   updateUser,
   deleteUser,
   getCurrentUser,
+  resetPassword,
+  logout,
+  forgotPassword,
 };

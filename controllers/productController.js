@@ -3,7 +3,6 @@ var productModel = require("../models/product");
 const productSchema = require("../schema/product");
 const { validationResult } = require("express-validator");
 const getAllProducts = async function (req, res, next) {
-  console.log(req.query);
   var products = await productModel.getall(req.query);
   responseData.responseReturn(res, 200, true, products);
 };

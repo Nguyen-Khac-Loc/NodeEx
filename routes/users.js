@@ -10,28 +10,25 @@ var router = express.Router();
 
 router.post("/signup", validate.validator(), authController.signup);
 router.post("/login", authController.login);
-router.get("/me", authController.protect, userController.getCurrentUser);
+router.post("/forgotPassword", userController.forgotPassword);
+router.post("/resetPassword/:token", userController.resetPassword);
+
+router.use(authController.protect);
+
+router.get("/me", userController.getCurrentUser);
+router.get("/logout", userController.logout);
+
+router.use(authController.restrictTo("admin", "publisher"));
 
 router
   .route("/")
-  .get(
-    authController.protect,
-    authController.restrictTo("admin", "publisher"),
-    userController.getAllUser
-  )
+  .get(userController.getAllUser)
   .post(validate.validator(), userController.createUser);
+
 router
   .route("/:id")
   .get(userController.getUser)
-  .put(
-    authController.protect,
-    authController.restrictTo("admin", "publisher"),
-    userController.updateUser
-  )
-  .delete(
-    authController.protect,
-    authController.restrictTo("admin", "publisher"),
-    userController.deleteUser
-  );
+  .put(userController.updateUser)
+  .delete(userController.deleteUser);
 
 module.exports = router;
